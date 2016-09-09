@@ -10,7 +10,7 @@ var environment = app.get("env");
 var databaseUri = require("./config/db")(environment);
 
 mongoose.Promise = bluebird
-mongoose.connect('mongodb://localhost/wdi-project-4');
+mongoose.connect(databaseUri);
 
 if('test' !== environment) {
   app.use(morgan('dev'));
