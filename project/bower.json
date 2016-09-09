@@ -1,0 +1,23 @@
+{
+  "name": "project",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "Shu-yang Chia <shuyangchia@hotmail.co.uk>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/SyangC/WDI_21_Project_4",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io-client": "^1.4.8",
+    "angular": "^1.5.8",
+    "angular-resource": "^1.5.8",
+    "angular-ui-router": "ui-router#^0.3.1"
+  }
+}
