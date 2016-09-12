@@ -1,8 +1,5 @@
 <h1>This is the home page!</h1>
 
-<p>{{ main.currentUser }}</p>
 <p>{{ main.currentUser.username }}</p>
-<img ng-src="{{main.currentUser.avatar}}">
+<img ng-src="{{main.currentUser.avatar}}" style="height:100px;width:100px;">
 <p>{{ main.currentUser.email }}</p>
-
-<p ng-click="main.submit()">click me</p>

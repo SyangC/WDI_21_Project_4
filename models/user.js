@@ -2,13 +2,20 @@ var mongoose = require("mongoose");
 var bcrypt = require("bcrypt");
 
 var userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
+  username: { type: String, required: true },
+  email: { type: String, reqiured: true },
   githubId: String,
   facebookId: String,
   instagramId: String,
   avatar: String,
   passwordHash: String
+});
+
+userSchema.pre("validate", function(next) {
+  if(!this._password && !this.githubId) {
+    this.invalidate('password', 'A password is required');
+  }
+  next();
 });
 
 userSchema.virtual("password")

@@ -1,10 +1,19 @@
 <h1>This is the chat page!</h1>
 
-<p>{{ main.currentUser }}</p>
-<p>{{ main.currentUser.username }}</p>
-<img ng-src="{{main.currentUser.avatar}}">
-<p>{{ main.currentUser.email }}</p>
-<form ng-submit="main.submit()">
-  <input type="text" name="message" ng-model="main.text">
-  <button>Chat</button>
+<p>{{ chat.currentUser.username }}</p>
+<img ng-src="{{main.currentUser.avatar}}" style="height:100px;width:100px;">
+<p>{{ chat.currentUser.email }}</p>
+
+<form ng-submit="chat.sendMessage()">
+  <input placeholder="Message here" ng-model="chat.newMessage">
 </form>
+
+<ul>
+  <li ng-repeat="message in chat.all track by $index">{{ message }}</li>
+</ul>
+
+<textarea contenteditable="false" ng-model="chat.final"></textarea>
+<button ng-click="chat.start()">Start</button>
+
+<button ng-click="chat.choice(AI)">AI</button>
+<button ng-click="chat.choice(HOOMAN)">HOOMAN</button>

@@ -18,6 +18,8 @@ if('test' !== environment) {
   app.use(morgan('dev'));
 }
 
+app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -25,10 +27,26 @@ app.use(express.static('public'));
 
 app.use('/api', routes);
 
-app.use(cors());
+// app.all("/api/*", function (req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+//     res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
+//     return next();
+// });
 
-app.listen(port, function() {
-  console.log("Express is listening on port " + port);
+var server = app.listen(port, function() {
+  console.log("Express is running... away!");
 });
+
+var io = require("socket.io").listen(server);
+
+io.on("connection", function(socket) {
+  console.log("Connected to socket with id: " + socket.id);
+
+  socket.on("message", function(message) {
+    console.log("Message as follows: " + message)
+    io.sockets.emit("message", message);
+  })
+})
 
 module.exports = app;
