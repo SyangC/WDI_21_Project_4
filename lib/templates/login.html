@@ -1,0 +1,22 @@
+<h1>Login</h1>
+
+<h3>Login with Email</h3>
+
+<form ng-submit="login.submit()">
+  <input type="text" name="email" ng-model="login.credentials.email">
+  <input type="password" name="password" ng-model="login.credentials.password">
+
+  <button>Submit</button>
+</form>
+
+
+<h3>Login With GitHub</h3>
+<button ng-click="login.authenticate('github')">Sign in with GitHub</button>
+
+<h3>Login With Facebook</h3>
+<button ng-click="login.authenticate('facebook')">Sign in with Facebook</button>
+
+<h3>Login With Instagram</h3>
+<button ng-click="login.authenticate('instagram')">Sign in with Instagram</button>
+
+<a ui-sref="register">Or register</a>

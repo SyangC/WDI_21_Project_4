@@ -1,1 +1,8 @@
-<h1>This is the H1 tag on the home.html page in the templates. Mind. Blown.</h1>
+<h1>This is the home page!</h1>
+
+<p>{{ main.currentUser }}</p>
+<p>{{ main.currentUser.username }}</p>
+<img ng-src="{{main.currentUser.avatar}}">
+<p>{{ main.currentUser.email }}</p>
+
+<p ng-click="main.submit()">click me</p>

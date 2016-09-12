@@ -12,16 +12,25 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.6.0",
+    "bcrypt": "^0.8.7",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.1.9",
     "mongoose": "^4.6.0",
     "morgan": "^1.7.0",
+    "multer": "^1.2.0",
+    "multer-s3": "^2.3.2",
     "request": "^2.74.0",
-    "socket.io": "^1.4.8"
+    "request-promise": "^4.1.1",
+    "socket.io": "^1.4.8",
+    "unirest": "^0.5.1",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.12",
     "gulp-concat": "^2.6.0",
@@ -32,6 +41,7 @@
     "gulp-sass": "^2.3.2",
     "gulp-uglify": "^2.0.0",
     "main-bower-files": "^2.13.1",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "supertest": "^2.0.0"
   }
 }

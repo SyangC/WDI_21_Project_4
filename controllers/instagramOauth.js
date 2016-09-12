@@ -6,35 +6,28 @@ var secret = require("../config/tokens").secret;
 function login(req, res) {
 
   request.post({
-    url: "https://github.com/login/oauth/access_token",
-    qs: {
-      client_id: process.env.GITHUB_API_KEY,
-      client_secret: process.env.GITHUB_API_SECRET,
-      code: req.body.code
+    url: "https://api.instagram.com/oauth/access_token",
+    form: {
+      client_id: process.env.INSTAGRAM_API_KEY,
+      client_secret: process.env.INSTAGRAM_API_SECRET,
+      code: req.body.code,
+      grant_type: 'authorization_code',
+      redirect_uri: req.body.redirectUri
     },
     json: true
-  })
-  .then(function(response) {
-    return request.get({
-      url: "https://api.github.com/user",
-      qs: { access_token: response.access_token },
-      headers: { 'User-Agent': 'Request-Promise' },
-      json: true
-    })
-  })
-  .then(function(profile) {
+  }).then(function(profile){
     return User.findOne({ email: profile.email })
       .then(function(user) {
         if(user) {
-          user.githubId = profile.id;
-          user.avatar = profile.avatar_url;
+          user.instagramId = profile.id;
+          user.avatar = profile.profile_picture;
         }
         else {
           user = new User({
             username: profile.login,
             email: profile.email,
-            githubId: profile.id,
-            avatar: profile.avatar_url
+            instagramId: profile.id,
+            avatar: profile.profile_picture
           });
         }
 

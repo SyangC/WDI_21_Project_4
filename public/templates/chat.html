@@ -1,0 +1,10 @@
+<h1>This is the chat page!</h1>
+
+<p>{{ main.currentUser }}</p>
+<p>{{ main.currentUser.username }}</p>
+<img ng-src="{{main.currentUser.avatar}}">
+<p>{{ main.currentUser.email }}</p>
+<form ng-submit="main.submit()">
+  <input type="text" name="message" ng-model="main.text">
+  <button>Chat</button>
+</form>
