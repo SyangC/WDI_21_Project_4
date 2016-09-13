@@ -1,0 +1,23 @@
+<h1>This is the Chatroom show</h1>
+
+<div>
+  <h3>Name: {{ roomsShow.selected.name }}</h3>
+  <h4>Capacity: {{ roomsShow.selected.capacity }}</h4>
+</div>
+
+<div>
+
+  <ul>
+    <li ng-repeat="message in roomsShow.all track by $index">{{ message }}</li>
+  </ul>
+
+  <form ng-submit="roomsShow.sendMessage()">
+    <input placeholder="Type your message here" ng-model="roomsShow.newMessage">
+  </form>
+
+  <input placeholder="Press start and speak" contenteditable="false" ng-model="roomsShow.final"></input>
+  <button ng-click="roomsShow.start()">Start</button>
+
+  <button ng-click="roomsShow.choice(AI)">AI</button>
+  <button ng-click="roomsShow.choice(HOOMAN)">HOOMAN</button>
+</div>

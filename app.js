@@ -34,19 +34,43 @@ app.use('/api', routes);
 //     return next();
 // });
 
+
 var server = app.listen(port, function() {
-  console.log("Express is running... away!");
+  console.log("It's aliiiiiiiiiive!!!");
 });
 
 var io = require("socket.io").listen(server);
 
-io.on("connection", function(socket) {
-  console.log("Connected to socket with id: " + socket.id);
 
+io.on("connection", function(socket) {
+  var roomName = null;
+  socket.on('room', function(room) {
+    roomName = room
+    socket.join(room);
+  });
   socket.on("message", function(message) {
-    console.log("Message as follows: " + message)
-    io.sockets.emit("message", message);
-  })
+    console.log("Message as follows: " + message + " in room " + roomName)
+    io.sockets.in(roomName).emit('message', message);
+  });
 })
+
+
+
+  // old code that DEFINITELY WORKS
+
+  // var server = app.listen(port, function() {
+  //   console.log("It's aliiiiiiiiiive!!!");
+  // });
+
+  // var io = require("socket.io").listen(server);
+
+  // io.on("connection", function(socket) {
+  //   console.log("Connected to socket with id: " + socket.id);
+
+  //   socket.on("message", function(message) {
+  //     console.log("Message as follows: " + message)
+  //     io.sockets.emit("message", message);
+  //   })
+  // })
 
 module.exports = app;

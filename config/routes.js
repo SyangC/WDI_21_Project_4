@@ -1,10 +1,10 @@
 var router = require('express').Router();
 
-var roomsController = require('../controllers/rooms');
 var githubController = require('../controllers/githubOauth');
 var facebookController = require('../controllers/facebookOauth');
 var instagramController = require('../controllers/instagramOauth');
 var authController = require('../controllers/auth');
+var roomsController = require('../controllers/rooms');
 
 var jwt = require('jsonwebtoken');
 var secret = require('./tokens').secret;
@@ -23,14 +23,10 @@ function secureRoute(req, res, next) {
   });
 }
 
-router.route('/rooms')
-  .get(roomsController.index)
-  .post(roomsController.create);
-
+router.get('/rooms', roomsController.index)
 router.route('/rooms/:id')
   .get(roomsController.show)
   .put(roomsController.update)
-  .delete(roomsController.delete);
 
 router.post('/oauth/github', githubController.login);
 router.post('/oauth/facebook', facebookController.login);

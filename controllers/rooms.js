@@ -20,16 +20,6 @@ function roomShow(req, res) {
     });
 }
 
-function roomCreate(req, res) {
-  Room.create(req.body)
-    .then(function(room) {
-      res.status(201).json(room);
-    })
-    .catch(function(err) {
-      res.status(500).json(err);
-    });
-}
-
 function roomUpdate(req, res) {
   Room.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then(function(room) {
@@ -40,20 +30,8 @@ function roomUpdate(req, res) {
     });
 }
 
-function roomDelete(req, res) {
-  Room.findByIdAndRemove(req.params.id)
-    .then(function() {
-      res.status(204).end();
-    })
-    .catch(function(err) {
-      res.status(500).json(err);
-    });
-}
-
 module.exports = {
   index: roomIndex,
   show: roomShow,
-  create: roomCreate,
-  update: roomUpdate,
-  delete: roomDelete
+  update: roomUpdate
 }

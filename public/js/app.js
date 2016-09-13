@@ -42,6 +42,16 @@ function Router($stateProvider, $urlRouterProvider) {
       url: '/register',
       templateUrl: '/templates/register.html',
       controller: "RegisterController as register"
+    })
+    .state('roomsIndex', {
+      url: '/rooms',
+      templateUrl: '/templates/roomsIndex.html',
+      controller: "RoomsIndexController as roomsIndex"
+    })
+    .state('roomsShow', {
+      url: '/rooms/:id',
+      templateUrl: '/templates/roomsShow.html',
+      controller: "RoomsShowController as roomsShow"
     });
 
     $urlRouterProvider.otherwise("/home");
@@ -69,6 +79,7 @@ function ChatController($auth, $state, $window, $rootScope, $http) {
   });
 
   // typed chat
+
 
   var socket = $window.io();
 
@@ -150,7 +161,6 @@ function ChatController($auth, $state, $window, $rootScope, $http) {
       this.final = null
     }
   };
-    
 }
 angular
   .module("ChatBotApp")
@@ -189,8 +199,6 @@ function MainController($auth, $state, $rootScope, $http) {
   var self = this;
 
   this.currentUser = $auth.getPayload();
-
-  
 
   this.logout = function() {
     $auth.logout();
@@ -240,9 +248,121 @@ angular
   .module("ChatBotApp")
   .factory("Room", Room);
 
-Room.$inject = ["$resource"];
+Room.$inject = ["$resource"]
 function Room($resource) {
-  return $resource('/api/rooms/:id', { id: '@_id' },  {
-    update: { method: "PUT" }
+  return $resource('/api/rooms/:id', { id: '@_id' });
+}
+angular
+  .module("ChatBotApp")
+  .controller("RoomsIndexController", RoomsIndexController);
+
+RoomsIndexController.$inject = ["Room", "$state"];
+function RoomsIndexController(Room, $state) {
+
+  this.all = Room.query();
+
+}
+angular
+  .module("ChatBotApp")
+  .controller("RoomsShowController", RoomsShowController);
+
+RoomsShowController.$inject = ["Room", "$state", "$window", "$auth", "$rootScope", "$http"];
+function RoomsShowController(Room, $state, $window, $auth, $rootScope, $http) {
+
+  var self = this;
+
+  // typed chat
+
+  this.selected = Room.get({ id: $state.params.id }, function(data) {
+    room = data.name;
+    console.log(room);
   });
+
+  var socket = $window.io();
+
+  socket.on("connect", function() {
+    socket.emit("room", room);
+    console.log("Socket room is " + room)
+  });
+
+  self.currentUser = $auth.getPayload();
+
+  this.newMessage = null;
+
+  this.all = [];
+
+  this.sendMessage = function(){
+    if(this.newMessage) {
+      console.log(this.newMessage)
+      socket.emit("message", this.newMessage);
+      $http({
+        method: "GET",
+        url: "http://api.brainshop.ai/get?bid=297&key=h48yqtsJpvTaMp36&uid=" + this.currentUser._id + "c&msg=" + this.newMessage,
+        dataType: "jsonp",
+      }).then(function(response){
+        console.log(response.data.cnt);
+        socket.emit("message", response.data.cnt);
+      });
+    }
+    this.newMessage = null;
+  }
+
+  socket.on("message", function(message) {
+    $rootScope.$evalAsync(function() {
+      console.log("This is what is being pushed in: " +message)
+      console.log(self.all)
+      self.all.push(message);
+    })
+  });
+  
+
+  // game choice
+
+  // this.choice = function(guess) {
+  //   if(guess === "HOOMAN") {
+  //     if() {
+
+  //     } else {
+        
+  //     }
+  //   } else {
+
+  //   }
+  // }
+
+  // Speech recognition
+
+  this.rec = new webkitSpeechRecognition();
+  this.final = "";
+  this.message = "";
+  this.rec.continuous = false;
+  this.rec.lang = "en-US";
+  this.rec.onerror = function(event) {
+    console.log("error!");
+  };
+
+  this.start = function() {
+    self.rec.start();
+  };
+  
+  this.rec.onresult = function(event) {
+    for(var i = event.resultIndex; i < event.results.length; i++) {
+      if(event.results[i].isFinal) {
+        self.final = self.final.concat(event.results[i][0].transcript);
+        console.log(event.results[i][0].transcript);
+        self.message = event.results[i][0].transcript
+        socket.emit("message", self.message);
+        $http({
+          method: "GET",
+          url: "http://api.brainshop.ai/get?bid=297&key=h48yqtsJpvTaMp36&uid=" + self.currentUser._id + "c&msg=" + self.message,
+          dataType: "jsonp",
+        }).then(function(response){
+          console.log(response.data.cnt);
+          socket.emit("message", response.data.cnt);
+        });
+      }
+      this.message = null
+      this.final = null
+    }
+  };
 }

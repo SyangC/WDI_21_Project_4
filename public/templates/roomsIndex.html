@@ -1,0 +1,7 @@
+<h1>This is the Chatroom index</h1>
+
+<ul>
+  <li ng-repeat="room in roomsIndex.all" ui-sref="roomsShow({ id: room._id })">
+    {{ room.name }}
+  </li>
+</ul>

@@ -14,6 +14,7 @@
       <a ui-sref="home">Home</a>
       <a ng-if="!main.currentUser" ui-sref="login">Login</a>
       <a ng-if="!main.currentUser" ui-sref="register">Register</a>
+      <a href="#" ng-if="main.currentUser" ui-sref="roomsIndex">Chatroom</a>
       <a href="#" ng-if="main.currentUser" ui-sref="chat">Chat</a>
       <a href="#" ng-if="main.currentUser" ng-click="main.logout()">Logout</a>
     </nav>
