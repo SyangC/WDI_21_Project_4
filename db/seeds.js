@@ -1,37 +1,50 @@
 var mongoose = require('mongoose');
 var Room = require('../models/room');
+var Chatbot = require('../models/chatbot');
 var databaseUri = require("../config/db")(process.env.NODE_ENV || "development");
 mongoose.connect(databaseUri);
 
 Room.collection.drop();
+Chatbot.collection.drop();
 
-Room.create([
-{
+Room.create([{
   name: "Alpha",
-  capacity: 3,
+  capacity: 2,
   messages: [],
-  currentUserId: []
+  users: []
 }, {
   name: "Beta",
-  capacity: 3,
+  capacity: 2,
   messages: [],
-  currentUserId: []
+  users: []
 }, {
   name: "Charlie",
-  capacity: 5,
+  capacity: 2,
   messages: [],
-  currentUserId: []
+  users: []
 }, {
   name: "Delta",
-  capacity: 5,
+  capacity: 2,
   messages: [],
-  currentUserId: []
+  users: []
 }, {
   name: "Echo",
-  capacity: 7,
+  capacity: 2,
   messages: [],
-  currentUserId: []
-}], function(err, room) {
-  if(!err) console.log("Room created!");
-  mongoose.connection.close();
+  users: []
+}], function(err, rooms) {
+  if(!err) console.log("Rooms created!");
+
+  Chatbot.create([{
+    name: "Aco",
+    bid: 297,
+    apikey: "h48yqtsJpvTaMp36"
+  }, {
+    name: "Aco",
+    bid: 307,
+    apikey: "HvAYTrjZMVnZ1CqS"
+  }], function(err, chatbots) {
+    if(!err) console.log("Chatbots created!");
+    mongoose.connection.close();
+  });
 });

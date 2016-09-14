@@ -2,7 +2,7 @@
 
 <div>
   <h3>Name: {{ roomsShow.selectedRoom.name }}</h3>
-  <h4>Capacity: {{roomsShow.selectedRoom.currentUserId.length}}/{{ roomsShow.selectedRoom.capacity }}</h4>
+  <h4>Capacity: {{roomsShow.selectedRoom.users.length}}/{{ roomsShow.selectedRoom.capacity }}</h4>
   <button ng-click="roomsShow.addPlayer()">Join Game</button>
   <button ng-click="roomsShow.removePlayer()">Leave Game</button>
   <button ng-click="roomsShow.gameStart()">Start Game</button>
@@ -10,7 +10,7 @@
   <div>
     <p>Please click on the player that you think is the AI. If you pick wrong and it is a hooman, you will lose points.</p>
     <ul>
-      <li ng-repeat="user in roomsShow.allUsers" ng-click="">Anonymous</li>
+      <li ng-repeat="user in roomsShow.allPlayers track by $index" ng-if="user !== roomsShow.currentUser._id" ng-click="roomsShow.choice(user)" ng-class="roomsShow.playerColors[roomsShow.allPlayers.indexOf(user)]">Anonymous</li>
     </ul>
   </div>
 </div>
@@ -18,7 +18,7 @@
 <div>
 
   <ul>
-    <li ng-repeat="message in roomsShow.allMessages track by $index">{{ message }}</li>
+    <li ng-repeat="message in roomsShow.allMessages track by $index" ng-class="roomsShow.playerColors[roomsShow.allPlayers.indexOf(message.id)]">{{ message.content }}</li>
   </ul>
 
   <form ng-submit="roomsShow.sendMessage()">

@@ -5,6 +5,7 @@ var facebookController = require('../controllers/facebookOauth');
 var instagramController = require('../controllers/instagramOauth');
 var authController = require('../controllers/auth');
 var roomsController = require('../controllers/rooms');
+var chatbotsController = require('../controllers/chatbots');
 
 var jwt = require('jsonwebtoken');
 var secret = require('./tokens').secret;
@@ -22,6 +23,13 @@ function secureRoute(req, res, next) {
     next();
   });
 }
+
+router.get('/chatbots', chatbotsController.index)
+router.get('/chatbots/respond', chatbotsController.respond);
+
+router.route('/chatbots/:id')
+  .get(chatbotsController.show)
+  .put(chatbotsController.update)
 
 router.get('/rooms', roomsController.index)
 router.route('/rooms/:id')
