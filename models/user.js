@@ -16,7 +16,7 @@ var userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("validate", function(next) {
-  if(!this._password && !this.githubId) {
+  if(!this._password && !this.githubId && !this.facebookId) {
     this.invalidate('password', 'A password is required');
   }
   next();
