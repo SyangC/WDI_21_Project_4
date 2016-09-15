@@ -56,8 +56,14 @@ io.on("connection", function(socket) {
   socket.on("gameStart", function(data) {
     io.sockets.in(roomName).emit("gameStart", data);
   });
+  socket.on("timerEnd", function(data) {
+    io.sockets.in(roomName).emit("gameStart", data);
+  });
   socket.on("message", function(data) {
     io.sockets.emit("message", data);
+  });
+  socket.on("capacityUpdate", function(data) {
+    io.sockets.emit("capacityUpdate", data);
   });
 })
 

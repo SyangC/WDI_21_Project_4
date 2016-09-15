@@ -1,7 +1,7 @@
 angular
   .module("ChatBotApp", ["ngResource", "ui.router", "satellizer"])
   .config(oAuthConfig)
-  .config(Router);
+  .config(Router)
 
 oAuthConfig.$inject = ["$authProvider"];
 function oAuthConfig($authProvider) {
@@ -33,35 +33,45 @@ function Router($stateProvider, $urlRouterProvider) {
       templateUrl: "/templates/chat.html",
       controller: "ChatController as chat"
     })
-    .state('login', {
-      url: '/login',
-      templateUrl: '/templates/login.html',
+    .state("login", {
+      url: "/login",
+      templateUrl: "/templates/login.html",
       controller: "LoginController as login"
     })
-    .state('register', {
-      url: '/register',
-      templateUrl: '/templates/register.html',
+    .state("register", {
+      url: "/register",
+      templateUrl: "/templates/register.html",
       controller: "RegisterController as register"
     })
-    .state('roomsIndex', {
-      url: '/rooms',
-      templateUrl: '/templates/rooms/roomsIndex.html',
+    .state("roomsIndex", {
+      url: "/rooms",
+      templateUrl: "/templates/rooms/roomsIndex.html",
       controller: "RoomsIndexController as roomsIndex"
     })
-    .state('roomsShow', {
-      url: '/rooms/:id',
-      templateUrl: '/templates/rooms/roomsShow.html',
+    .state("roomsShow", {
+      url: "/rooms/:id",
+      templateUrl: "/templates/rooms/roomsShow.html",
       controller: "RoomsShowController as roomsShow"
     })
-    .state('chatbotsIndex', {
-      url: '/chatbots',
-      templateUrl: '/templates/chatbotsIndex.html',
+    .state("chatbotsIndex", {
+      url: "/chatbots",
+      templateUrl: "/templates/chatbots/chatbotsIndex.html",
       controller: "ChatbotsIndexController as chatbotsIndex"
     })
-    .state('chatbotsShow', {
-      url: '/chatbots/:id',
-      templateUrl: '/templates/chatbotsShow.html',
+    .state("chatbotsShow", {
+      url: "/chatbots/:id",
+      templateUrl: "/templates/chatbots/chatbotsShow.html",
       controller: "ChatbotsShowController as chatbotsShow"
+    })
+    .state("usersIndex", {
+      url: "/users",
+      templateUrl: "/templates/users/usersIndex.html",
+      controller: "UsersIndexController as usersIndex"
+    })
+    .state("usersShow", {
+      url: "/users/:id",
+      templateUrl: "/templates/users/usersShow.html",
+      controller: "UsersShowController as usersShow"
     });
 
     $urlRouterProvider.otherwise("/home");
@@ -239,12 +249,12 @@ function RegisterController($auth, $state, $rootScope) {
   }
 }
 angular
-  .module('ChatBotApp')
-  .directive('date', date);
+  .module("ChatBotApp")
+  .directive("date", date);
 
 function date() {
   return {
-    restrict: 'A',
+    restrict: "A",
     require: "ngModel",
     link: function(scope, element, attrs, ngModel) {
       ngModel.$formatters.push(function(value) {
@@ -302,16 +312,55 @@ function ChatBotService($http) {
     });
   }
 }
+angular
+  .module("ChatBotApp")
+  .controller("ChatbotsIndexController", ChatbotsIndexController);
+
+ChatbotsIndexController.$inject = ["Chatbot", "$state", "$window", "$rootScope"];
+function ChatbotsIndexController(Chatbot, $state, $window, $rootScope) {
+
+  this.all = Chatbot.query();
+
+  this.header = 'username';
+  this.reverse = true;
+
+  this.sortBy = function(header) {
+    this.reverse = (this.header === header) ? !this.reverse : false;
+    this.header = header;
+  };
+
+}
+angular
+  .module("ChatBotApp")
+  .controller("ChatbotsShowController", ChatbotsShowController);
+
+ChatbotsShowController.$inject = ["Chatbot", "$state"];
+function ChatbotsShowController(Chatbot, $state) {
+  var self = this;
+
+  this.selected = Chatbot.get({ id: $state.params.id });
+
+  this.update = function() {
+    this.selected.$update();
+  }
+}
 
 angular
   .module("ChatBotApp")
   .controller("RoomsIndexController", RoomsIndexController);
 
-RoomsIndexController.$inject = ["Room", "$state"];
-function RoomsIndexController(Room, $state) {
+RoomsIndexController.$inject = ["Room", "$state", "$window", "$rootScope"];
+function RoomsIndexController(Room, $state, $window, $rootScope) {
 
   this.all = Room.query();
 
+  var socket = $window.io();
+
+  socket.on("capacityUpdate", function(changes) {
+    $rootScope.$evalAsync(function() {
+      self.all
+    })
+  });
 }
 angular
   .module("ChatBotApp")
@@ -319,7 +368,6 @@ angular
 
 RoomsShowController.$inject = ["Room", "User", "Chatbot", "$state", "$window", "$auth", "$rootScope", "ChatBotService"];
 function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootScope, ChatBotService) {
-
   var self = this;
 
   this.allBots = Chatbot.query();
@@ -344,14 +392,22 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
     if(this.newMessage) {
       socket.emit("roomMessage", { content: this.newMessage, id: this.currentUser._id});
 
-      ChatBotService
-        .getResponse(this.newMessage, currentBot.bid, this.currentUser._id, currentBot.apikey)
-        .then(function(response){
-          socket.emit("roomMessage", {
-            content: response.data,
-            id: currentBot._id
-          });
-        });
+      var rand = Math.random()
+      console.log(rand)
+      if(rand <= 0.65) {
+        ChatBotService
+          .getResponse(this.newMessage, currentBot.bid, this.currentUser._id, currentBot.apikey)
+          .then(function(response){
+            delay = Math.random() * 2000
+            console.log(delay)
+            setTimeout(function() {
+              socket.emit("roomMessage", {
+                content: response.data,
+                id: currentBot._id
+              });
+            }, delay);
+          }); 
+      }
     }
     this.newMessage = null;
   }
@@ -367,28 +423,75 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
     $rootScope.$evalAsync(function() {
       self.allUsers = changes
       self.selectedRoom.users = changes;
+      if(self.selectedRoom.users.length === self.selectedRoom.capacity && self.allUsers.indexOf(self.currentUser._id) !== -1) {
+        addButton[0].disabled = "disabled";
+        startButton[0].disabled = "";
+      } else if (self.selectedRoom.users.length === self.selectedRoom.capacity) {
+        addButton[0].disabled = "disabled";
+        startButton[0].disabled = "disabled";
+      } else if(self.selectedRoom.users.length < self.selectedRoom.capacity && self.allUsers.indexOf(self.currentUser._id) === -1) {
+        addButton[0].disabled = "";
+        startButton[0].disabled = "disabled";
+      } else if (self.selectedRoom.users.length < self.selectedRoom.capacity && self.allUsers.indexOf(self.currentUser._id) !== -1) {
+        addButton[0].disabled = "";
+        startButton[0].disabled = "";
+      }
     })
   });
 
   socket.on("gameStart", function(data) {
     $rootScope.$evalAsync(function() {
-      gameState = data.gameState
-      console.log("Gamestate is ", gameState)
-      currentBot = data.currentBot
-      console.log("Bot is ", currentBot)
-      self.allPlayers = data.allPlayers
-      console.log("Players are ", self.allPlayers)
+      if(self.allUsers.indexOf(self.currentUser._id) !== -1) {
+        self.gameState = data.gameState;
+        currentBot = data.currentBot;
+        self.allPlayers = data.allPlayers;
+        counter();
+        this.userToBeUpdated = User.get({ id: this.currentUser._id }, function(user) {
+          user.rightGuess = Number(user.rightGuess) + 1
+          console.log(user);
+          console.log(user.rightGuess);
+          user.$update();
+        });
+        this.botToBeUpdated = Chatbot.get({ id: currentBot._id }, function(bot) {
+          bot.numberDeceived = Number(bot.numberDeceived) + 1
+          console.log(bot);
+          console.log(bot.numberDeceived);
+          bot.$update();
+        });
+      }
     })
   });
 
   var currentBot = "";
 
+  var addButton = document.getElementsByClassName("add-button");
+
+  var leaveButton = document.getElementsByClassName("leave-button");
+
+  var startButton = document.getElementsByClassName("start-button");
+
+  // if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
+  //   addButton[0].disabled = "disabled";
+  //   leaveButton[0].disabled = "";
+  //   startButton[0].disabled = "";
+  // } else if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
+
+  // }
+
   this.addPlayer = function() {
-    if(this.allUsers.indexOf(this.currentUser._id) === -1) {
+    console.log(this.allUsers)
+    console.log(this.currentUser._id)
+    if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
       this.allUsers.push(this.currentUser._id);
       this.selectedRoom.users = this.allUsers;
-      socket.emit("playerChanges", this.selectedRoom.users);
       this.selectedRoom.$update();
+      addButton[0].disabled = "disabled";
+      leaveButton[0].disabled = "";
+      console.log("Newest ", this.selectedRoom)
+      socket.emit("playerChanges", this.selectedRoom.users);
+      socket.emit("capacityUpdate", { users: this.selectedRoom.users, room: this.selectedRoom});
+    } else if(this.allUsers.indexOf(this.currentUser._id) === -1) {
+      console.log("The game is full")
     } else {
       console.log("You have already joined the game")
     }
@@ -400,6 +503,8 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
       this.allUsers.splice(i, 1);
     }
     this.selectedRoom.users = this.allUsers;
+    addButton[0].disabled = "";
+    leaveButton[0].disabled = "disabled";
     socket.emit("playerChanges", this.selectedRoom.users);
     this.selectedRoom.$update();
   }
@@ -408,7 +513,7 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
 
   this.playerColors = ["player-one", "player-two", "player-three"];
 
-  var gameState = -1;
+  this.gameState = -1;
 
   function shuffle(a) {
     var j, x, i;
@@ -420,29 +525,75 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
     }
   }
 
+  var counter;
+
+  function counter() {
+    counter = setInterval(timer, 1000);
+  }
+
+  this.count = 5
+  var count = 5;
+  function timer() {
+    count = count-1;
+    this.count = Math.floor((100/5)*count)
+    var timer = document.getElementsByClassName("timer");
+    timer[0].style.width = this.count + "%";
+    if(count <= 0) {
+      gameEnd();
+      clearInterval(counter);
+      return;
+    }
+  }
+
   this.gameStart = function() {
     if(this.selectedRoom.users.length === this.selectedRoom.capacity){
-      if(gameState === -1) {
+      if(this.gameState === -1) {
         currentBot = this.allBots[Math.floor(Math.random() * this.allBots.length)];
         this.allPlayers = (this.allUsers).slice();
         this.allPlayers.push(currentBot._id);
         shuffle(this.allPlayers);
-        socket.emit("gameStart", { gameState: 0, currentBot: currentBot, allPlayers: this.allPlayers });
+        this.gameState = 0;
+        socket.emit("gameStart", { gameState: this.gameState, currentBot: currentBot, allPlayers: this.allPlayers });
         console.log("The capacity thing is working");
-        gameState = 0;
-      } else {
-        console.log("The game has already started.");
+      } else if(this.gameState === 0) {
+        console.log("The game is currently in progress.");
+      } else{
+        console.log("The game is over!")
       }
     } else {
       console.log("The game is not yet ready. Please wait for the room to be full.");
     }
   }
 
+  var gameEnd = function() {
+    self.gameState = 1
+    console.log("The timer is up!")
+  }
+
+  var chosen = 0
+
   this.choice = function(user) {
-    if(user === currentBot._id) {
-      console.log("you are the winner!")
+    if(this.gameState === 1 && chosen === 0) {
+      if(user === currentBot._id) {
+        document.getElementById("answer").innerHTML = "You chose...wisely!";
+        this.userToBeUpdated = User.get({ id: this.currentUser._id }, function(user) {
+          user.rightGuess = Number(user.rightGuess) + 1
+          console.log(user);
+          console.log(user.rightGuess);
+          user.$update();
+        });
+      } else {
+        document.getElementById("answer").innerHTML = "You chose...poorly!";
+        console.log(currentBot._id)
+        this.botToBeUpdated = Chatbot.get({ id: currentBot._id }, function(bot) {
+          bot.numberDeceived = Number(bot.numberDeceived) + 1
+          console.log(bot);
+          console.log(bot.numberDeceived);
+          bot.$update();
+        });
+      }
     } else {
-      console.log("you lost!")
+      console.log("You have already made your choice!")
     }
   }
 
@@ -465,16 +616,56 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
         self.message = event.results[i][0].transcript
         socket.emit("roomMessage", { content: self.message, id: self.currentUser._id});
 
-        ChatBotService
-          .getResponse(self.message, currentBot.bid, self.currentUser._id, currentBot.apikey)
-          .then(function(response){
-            socket.emit("roomMessage", {
-              content: response.data,
-              id: currentBot._id
+        var rand = Math.random()
+        console.log(rand)
+        if(rand <= 0.65) {
+          ChatBotService
+            .getResponse(self.message, currentBot.bid, self.currentUser._id, currentBot.apikey)
+            .then(function(response){
+              delay = Math.random() * 2000
+              console.log(delay)
+              setTimeout(function() {
+                socket.emit("roomMessage", {
+                  content: response.data,
+                  id: currentBot._id
+                });
+              }, delay);
             });
-          });
+        }
       }
       self.message = null
     }
   };
+}
+angular
+  .module("ChatBotApp")
+  .controller("UsersIndexController", UsersIndexController);
+
+UsersIndexController.$inject = ["User", "$state", "$window", "$rootScope"];
+function UsersIndexController(User, $state, $window, $rootScope) {
+
+  this.all = User.query();
+
+  this.header = 'username';
+  this.reverse = true;
+
+  this.sortBy = function(header) {
+    this.reverse = (this.header === header) ? !this.reverse : false;
+    this.header = header;
+  };
+
+}
+angular
+  .module("ChatBotApp")
+  .controller("UsersShowController", UsersShowController);
+
+UsersShowController.$inject = ["User", "$state"];
+function UsersShowController(User, $state) {
+  var self = this;
+
+  this.selected = User.get({ id: $state.params.id });
+
+  this.update = function() {
+    this.selected.$update();
+  }
 }

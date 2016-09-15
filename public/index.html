@@ -2,6 +2,11 @@
 <html ng-app="ChatBotApp">
 <head>
   <title>ChatBot App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="socket.io/socket.io.js"></script>
   <script src="/js/vendor.js"></script>
   <script src="/js/app.js"></script>
@@ -10,16 +15,49 @@
 </head>
 <body ng-controller="MainController as main">
   <header>
-    <nav>
-      <a ui-sref="home">Home</a>
-      <a ng-if="!main.currentUser" ui-sref="login">Login</a>
-      <a ng-if="!main.currentUser" ui-sref="register">Register</a>
-      <a href="#" ng-if="main.currentUser" ui-sref="roomsIndex">Chatroom</a>
-      <a href="#" ng-if="main.currentUser" ui-sref="chat">Chat</a>
-      <a href="#" ng-if="main.currentUser" ng-click="main.logout()">Logout</a>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" ui-sref="home">Human or AI?</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a ui-sref="home">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a ng-if="main.currentUser" ui-sref="chat">Main Chatroom</a></li>
+            <li class="dropdown" ng-controller="RoomsIndexController as roomsIndex" ng-if="main.currentUser">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Chatrooms <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a ng-if="main.currentUser" ui-sref="roomsIndex">All Chatrooms</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Room list</li>
+                <li ng-repeat="room in roomsIndex.all | limitTo:5"><a ng-if="main.currentUser" ui-sref="roomsShow({ id: room._id })">{{ room.name }}</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown" ng-controller="RoomsIndexController as roomsIndex" ng-if="main.currentUser">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">High Scores <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a ui-sref="usersIndex">Humans</a></li>
+                <li><a ui-sref="chatbotsIndex">Bots</a></li>
+              </ul>
+            </li>
+            <li><a ng-if="!main.currentUser" ui-sref="register">Register</a></li>
+            <li><a ng-if="!main.currentUser" ui-sref="login">Log In</a></li>
+            <li><a ng-if="main.currentUser" ng-click="main.logout()">Log Out</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
     </nav>
   </header>
 
-  <main ui-view></main>
+  <main ui-view class="col-md-8 col-md-offset-2"></main>
 </body>
 </html>

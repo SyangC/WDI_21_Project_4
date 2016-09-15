@@ -11,7 +11,7 @@ function login(req, res) {
       client_id: process.env.FACEBOOK_API_KEY,
       client_secret: process.env.FACEBOOK_API_SECRET,
       code: req.body.code,
-      redirect_uri: "https://human-or-ai.herokuapp.com/"
+      redirect_uri: "http://localhost:3000/"
     },
     json: true
   }).then(function(access_token) {

@@ -1,9 +1,28 @@
-.player-one {
+div.player-one div img{
+  border: solid 2px red;
+}
+div.player-two div img {
+  border: solid 2px blue;
+}
+div.player-three div img {
+  border: solid 2px green;
+}
+
+main {
+  margin-top: 50px;
+}
+
+div ul.message-list li.player-one {
+  list-style: none;
   color: red;
 }
-.player-two {
+
+div ul.message-list li.player-two {
+  list-style: none;
   color: blue;
 }
-.player-three {
+
+div ul.message-list li.player-three {
+  list-style: none;
   color: green;
 }

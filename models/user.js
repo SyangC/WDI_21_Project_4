@@ -8,7 +8,11 @@ var userSchema = new mongoose.Schema({
   facebookId: String,
   instagramId: String,
   avatar: String,
-  passwordHash: String
+  passwordHash: String,
+  gamesPlayed: { type: Number, default: 0 },
+  rightGuess: { type: Number, default: 0 },
+  totalGuess: { type: Number, default: 0 },
+  numberDeceived: { type: Number, default: 0 }
 });
 
 userSchema.pre("validate", function(next) {

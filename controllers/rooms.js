@@ -1,4 +1,5 @@
 var Room = require('../models/room');
+var User = require('../models/user');
 
 function roomIndex(req, res) {
   Room.find()

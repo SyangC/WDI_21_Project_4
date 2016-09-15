@@ -1,11 +1,13 @@
 var mongoose = require('mongoose');
 var Room = require('../models/room');
 var Chatbot = require('../models/chatbot');
+var User = require('../models/user');
 var databaseUri = require("../config/db")(process.env.NODE_ENV || "development");
 mongoose.connect(databaseUri);
 
 Room.collection.drop();
 Chatbot.collection.drop();
+User.collection.drop();
 
 Room.create([{
   name: "Alpha",
@@ -32,6 +34,31 @@ Room.create([{
   capacity: 2,
   messages: [],
   users: []
+}, {
+  name: "Foxtrot",
+  capacity: 2,
+  messages: [],
+  users: []
+}, {
+  name: "Gamma",
+  capacity: 2,
+  messages: [],
+  users: []
+}, {
+  name: "Hotel",
+  capacity: 2,
+  messages: [],
+  users: []
+}, {
+  name: "Indigo",
+  capacity: 2,
+  messages: [],
+  users: []
+}, {
+  name: "Juliet",
+  capacity: 2,
+  messages: [],
+  users: []
 }], function(err, rooms) {
   if(!err) console.log("Rooms created!");
 
@@ -45,6 +72,30 @@ Room.create([{
     apikey: "HvAYTrjZMVnZ1CqS"
   }], function(err, chatbots) {
     if(!err) console.log("Chatbots created!");
-    mongoose.connection.close();
+      
+      User.create([{
+        username: "shuisawesome",
+        email: "shu@me.com",
+        password: "password",
+        passwordConfirmation: "password"
+      }, {
+        username: "test",
+        email: "test@test.com",
+        password: "password",
+        passwordConfirmation: "password"
+      }, {
+        username: "test2",
+        email: "test2@test.com",
+        password: "password",
+        passwordConfirmation: "password"
+      }, {
+        username: "test3",
+        email: "test3@test.com",
+        password: "password",
+        passwordConfirmation: "password"
+      }], function(err, users) {
+        if(!err) console.log("Users created!");
+      mongoose.connection.close();
+    });
   });
 });

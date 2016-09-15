@@ -6,6 +6,7 @@ var instagramController = require('../controllers/instagramOauth');
 var authController = require('../controllers/auth');
 var roomsController = require('../controllers/rooms');
 var chatbotsController = require('../controllers/chatbots');
+var usersController = require('../controllers/users');
 
 var jwt = require('jsonwebtoken');
 var secret = require('./tokens').secret;
@@ -35,6 +36,11 @@ router.get('/rooms', roomsController.index)
 router.route('/rooms/:id')
   .get(roomsController.show)
   .put(roomsController.update)
+
+router.get('/users', usersController.index)
+router.route('/users/:id')
+  .get(usersController.show)
+  .put(usersController.update)
 
 router.post('/oauth/github', githubController.login);
 router.post('/oauth/facebook', facebookController.login);
