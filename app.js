@@ -62,6 +62,9 @@ io.on("connection", function(socket) {
   socket.on("message", function(data) {
     io.sockets.emit("message", data);
   });
+  socket.on("messageLoop", function(data) {
+    io.sockets.emit("messageLoop", data);
+  });
   socket.on("capacityUpdate", function(data) {
     io.sockets.emit("capacityUpdate", data);
   });

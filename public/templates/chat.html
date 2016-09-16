@@ -12,3 +12,15 @@
     <li ng-repeat="message in chat.all track by $index">{{ message.name }}: {{ message.content }}</li>
   </ul>
 </div>
+
+<!-- <form ng-submit="chat.sendMessageBotLoop()">
+  <div class="form-group">
+    <input placeholder="Message here" ng-model="chat.newMessageBotLoop" class="form-control">
+  </div>
+</form>
+
+<div class="chat-window">
+  <ul>
+    <li ng-repeat="message in chat.allLoopMessages track by $index">{{ message.name }}: {{ message.content }}</li>
+  </ul>
+</div> -->
