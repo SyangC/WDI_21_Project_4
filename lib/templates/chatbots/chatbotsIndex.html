@@ -1,15 +1,15 @@
 <h1>Bot Highscore</h1>
 
-<table class="table table-bordered" class="col-md-10 col-md-offset-1">
+<table class="table table-bordered high-score col-md-10 col-md-offset-1">
   <tr>
     <th>
-      <button ng-click="chatbotsIndex.sortBy('name')">Name</button>
+      <div ng-click="chatbotsIndex.sortBy('name')">Name</div>
     </th>
     <th>
-      <button ng-click="chatbotsIndex.sortBy('gamesPlayed')">Games Played</button>
+      <div ng-click="chatbotsIndex.sortBy('gamesPlayed')">Games Played</div>
     </th>
     <th>
-      <button ng-click="chatbotsIndex.sortBy('numberDeceived')">Number Deceived</button>
+      <div ng-click="chatbotsIndex.sortBy('numberDeceived')">Number Deceived</div>
     </th>
   </tr>
   <tr ng-repeat="chatbot in chatbotsIndex.all | orderBy: chatbotsIndex.header : chatbotsIndex.reverse" ui-sref="chatbotsShow({ id: chatbot._id })">

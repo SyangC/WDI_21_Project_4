@@ -1,13 +1,12 @@
-<h1>This is the Chatrooms index</h1>
-
-<div class="row">
-  <div ng-repeat="room in roomsIndex.all" class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <img src="http://www.fillmurray.com/200/200">
-      <div class="caption">
-        <h3>{{ room.name }}</h3>
-        <p>Capacity: {{room.users.length}}/{{ room.capacity }}</p>
-        <p><a ui-sref="roomsShow({ id: room._id })" class="btn btn-primary" role="button">Enter</a></p>
+<div class="rooms-show">
+  <div class="row">
+    <div ng-repeat="room in roomsIndex.all" class="col-sm-6 col-md-4">
+      <div class="thumbnail">
+        <img src="../images/66EE6E64A5.jpg">
+        <div class="caption">
+          <h3>{{ room.name }}</h3>
+          <p><a ui-sref="roomsShow({ id: room._id })" class="btn btn-primary" role="button">Enter</a></p>
+        </div>
       </div>
     </div>
   </div>

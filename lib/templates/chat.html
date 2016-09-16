@@ -1,16 +1,14 @@
-<h1>This is the chat page!</h1>
-
-<p>{{ chat.currentUser.username }}</p>
-<img ng-src="{{main.currentUser.avatar}}" style="height:100px;width:100px;">
-<p>{{ chat.currentUser.email }}</p>
+<h1>Main chat</h1>
+<p>This is the main chatroom. Please feel free to chat to one and another here before heading into the game rooms.</p>
 
 <form ng-submit="chat.sendMessage()">
-  <input placeholder="Message here" ng-model="chat.newMessage">
+  <div class="form-group">
+    <input placeholder="Message here" ng-model="chat.newMessage" class="form-control">
+  </div>
 </form>
 
-<ul>
-  <li ng-repeat="message in chat.all track by $index">{{ message }}</li>
-</ul>
-
-<textarea contenteditable="false" ng-model="chat.final"></textarea>
-<button ng-click="chat.start()">Start</button>
+<div class="chat-window">
+  <ul>
+    <li ng-repeat="message in chat.all track by $index">{{ message.name }}: {{ message.content }}</li>
+  </ul>
+</div>

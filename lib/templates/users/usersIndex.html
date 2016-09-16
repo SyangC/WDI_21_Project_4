@@ -1,21 +1,21 @@
 <h1>Global Highscore</h1>
 
-<table class="table table-bordered" class="col-md-10 col-md-offset-1">
+<table class="table table-bordered high-score col-md-10 col-md-offset-1">
   <tr>
     <th>
-      <button ng-click="usersIndex.sortBy('username')">Username</button>
+      <div ng-click="usersIndex.sortBy('username')">Username</div>
     </th>
     <th>
-      <button ng-click="usersIndex.sortBy('gamesPlayed')">Games Played</button>
+      <div ng-click="usersIndex.sortBy('gamesPlayed')">Games Played</div>
     </th>
     <th>
-      <button ng-click="usersIndex.sortBy('rightGuess')">Right Guesses</button>
+      <div ng-click="usersIndex.sortBy('rightGuess')">Right Guesses</div>
     </th>
     <th>
-      <button ng-click="usersIndex.sortBy('totalGuess')">Total Guesses</button>
+      <div ng-click="usersIndex.sortBy('totalGuess')">Total Guesses</div>
     </th>
     <th>
-      <button ng-click="usersIndex.sortBy('numberDeceived')">Number Deceived</button>
+      <div ng-click="usersIndex.sortBy('numberDeceived')">Number Deceived</div>
     </th>
   </tr>
   <tr ng-repeat="user in usersIndex.all | orderBy: usersIndex.header : usersIndex.reverse" ui-sref="usersShow({ id: user._id })">

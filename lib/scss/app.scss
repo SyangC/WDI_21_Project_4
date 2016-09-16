@@ -1,3 +1,185 @@
+html, body, main {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+.chat-window {
+  height: 40%;
+  width: 100%;
+  overflow: scroll;
+  border: solid 2px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.room-chat-window {
+  margin-top: 40px;
+  height: 30%;
+  width: 100%;
+  overflow: scroll;
+  border: solid 2px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.chat-window ul li {
+  list-style: none
+}
+
+.modal {
+  text-align: left;
+}
+
+.high-score tr th div {
+  text-align: center;
+}
+
+body {
+  background: url(https://www.edx.org/sites/default/files/course/image/featured-card/artificial-intelligence-378x225.jpg) center center fixed no-repeat;
+  background-size: cover;
+  z-index: -1;
+}
+
+body.no {
+  background: #E0E0E2;
+}
+
+.login, .register {
+  margin-top: 20%
+}
+
+.email-login, #social-media, .register-button {
+  margin: 20px;
+}
+
+.message-voice, .progress {
+  margin-top:20px
+}
+
+#social-media a {
+  margin: 10px;
+}
+
+.home-centered {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 2;
+  max-width: 100%;
+  text-align: center;
+}
+
+.home-links {
+  margin-top: 30px;
+  display: inline-block;
+  padding: 0 30px;
+  font-size: 20px;
+  width: 70%;
+  min-width: 520px;
+}
+
+.home-centered h1 {
+  font-size: 65px;
+  letter-spacing: 0.1em;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.home-centered p {
+  font-size: 18px;
+}
+
+.home-links .left {
+  float: left;
+}
+
+.home-links .right {
+  float: right;
+}
+
+.shader {
+  width: 100%;
+  height: 100vh;
+  
+  position: absolute;
+  background: -webkit-linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+  z-index: 1;
+}
+
+$bgDefault      : #0b6e4f;
+$bgHighlight    : #2b4162;
+$colDefault     : #e0e0e2;
+$colHighlight   : #ecdbff;
+$dropDown       : false;
+.navbar-default {
+  background-color: $bgDefault;
+  border-color: $bgHighlight;
+  .navbar-brand {
+    color: $colDefault;
+    &:hover, &:focus {
+      color: $colHighlight; }}
+  .navbar-text {
+    color: $colDefault; }
+  .navbar-nav {
+    > li {
+      > a {
+        color: $colDefault;
+        &:hover,  &:focus {
+          color: $colHighlight; }}
+      @if $dropDown {
+        > .dropdown-menu {
+          background-color: $bgDefault;
+          > li {
+            > a {
+              color: $colDefault;
+              &:hover,  &:focus {
+                color: $colHighlight;
+                background-color: $bgHighlight; }}
+            > .divider {
+              background-color: $bgHighlight;}}}}}
+    @if $dropDown {
+      .open .dropdown-menu > .active {
+        > a, > a:hover, > a:focus {
+          color: $colHighlight;
+          background-color: $bgHighlight; }}}
+    > .active {
+      > a, > a:hover, > a:focus {
+        color: $colHighlight;
+        background-color: $bgHighlight; }}
+    > .open {
+      > a, > a:hover, > a:focus {
+        color: $colHighlight;
+        background-color: $bgHighlight; }}}
+  .navbar-toggle {
+    border-color: $bgHighlight;
+    &:hover, &:focus {
+      background-color: $bgHighlight; }
+    .icon-bar {
+      background-color: $colDefault; }}
+  .navbar-collapse,
+  .navbar-form {
+    border-color: $colDefault; }
+  .navbar-link {
+    color: $colDefault;
+    &:hover {
+      color: $colHighlight; }}}
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu {
+    > li > a {
+      color: $colDefault;
+      &:hover, &:focus {
+        color: $colHighlight; }}
+    > .active {
+      > a, > a:hover, > a:focus {
+        color: $colHighlight;
+        background-color: $bgHighlight; }}}
+}
+
 div.player-one div img{
   border: solid 2px red;
 }
@@ -6,10 +188,6 @@ div.player-two div img {
 }
 div.player-three div img {
   border: solid 2px green;
-}
-
-main {
-  margin-top: 50px;
 }
 
 div ul.message-list li.player-one {
@@ -25,4 +203,86 @@ div ul.message-list li.player-two {
 div ul.message-list li.player-three {
   list-style: none;
   color: green;
+}
+
+img.social-media {
+  height:50px;
+}
+
+.button-hover-effect a {
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  transition: color 0.3s;
+}
+
+.button-hover-effect a::before {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  color: transparent;
+  content: '•';
+  text-shadow: 0 0 transparent;
+  font-size: 1.2em;
+  -webkit-transition: text-shadow 0.3s, color 0.3s;
+  -moz-transition: text-shadow 0.3s, color 0.3s;
+  transition: text-shadow 0.3s, color 0.3s;
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.button-hover-effect a:hover::before,
+.button-hover-effect a:focus::before {
+  color: white;
+  text-shadow: 10px 0 white, -10px 0 white;
+}
+
+.button-hover-effect a:hover,
+.button-hover-effect a:focus {
+  color: white;
+}
+
+nav.home-links a {
+  position: relative;
+  display: inline-block;
+  outline: none;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 400;
+  text-shadow: 0 0 1px rgba(255,255,255,0.3);
+}
+
+nav.home-links a:hover,
+nav.home-links a:focus {
+  outline: none;
+}
+
+.btn-custom {
+  background-color: #0B6E4F;
+  border-color: #0B6E4F;
+}
+.btn-custom:hover,
+.btn-custom:focus,
+.btn-custom:active,
+.btn-custom.active {
+  background-color: #09573e;
+  border-color: #06402e;
+}
+.btn-custom.disabled:hover,
+.btn-custom.disabled:focus,
+.btn-custom.disabled:active,
+.btn-custom.disabled.active,
+.btn-custom[disabled]:hover,
+.btn-custom[disabled]:focus,
+.btn-custom[disabled]:active,
+.btn-custom[disabled].active,
+fieldset[disabled] .btn-custom:hover,
+fieldset[disabled] .btn-custom:focus,
+fieldset[disabled] .btn-custom:active,
+fieldset[disabled] .btn-custom.active {
+  background-color: #0B6E4F;
+  border-color: #0B6E4F;
 }

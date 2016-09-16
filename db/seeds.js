@@ -54,22 +54,21 @@ Room.create([{
   capacity: 2,
   messages: [],
   users: []
-}, {
-  name: "Juliet",
-  capacity: 2,
-  messages: [],
-  users: []
 }], function(err, rooms) {
   if(!err) console.log("Rooms created!");
 
   Chatbot.create([{
-    name: "Aco",
+    name: "Mike",
     bid: 297,
     apikey: "h48yqtsJpvTaMp36"
   }, {
-    name: "Aco",
+    name: "Chanse",
     bid: 307,
     apikey: "HvAYTrjZMVnZ1CqS"
+  }, {
+    name: "Rosie",
+    bid: 312,
+    apikey: "Bl92J1PDwrPDKPZE"
   }], function(err, chatbots) {
     if(!err) console.log("Chatbots created!");
       

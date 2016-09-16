@@ -81,24 +81,12 @@ angular
   .controller("ChatController", ChatController);
 
 
-ChatController.$inject = ["$auth", "$state", "$window", "$rootScope", "$http"];
-function ChatController($auth, $state, $window, $rootScope, $http) {
+ChatController.$inject = ["Chatbot", "$auth", "$state", "$window", "$rootScope", "$http", "ChatBotService"];
+function ChatController(Chatbot, $auth, $state, $window, $rootScope, $http, ChatBotService) {
 
   var self = this;
 
-  // logged in/logged out
-
-  this.logout = function() {
-    $auth.logout();
-    this.currentUser = null;
-    $state.go("login");
-  }
-
-  $rootScope.$on("loggedIn", function() {
-    self.currentUser = $auth.getPayload();
-  });
-
-  // typed chat
+  this.allBots = Chatbot.query();
 
   var socket = $window.io();
 
@@ -108,18 +96,25 @@ function ChatController($auth, $state, $window, $rootScope, $http) {
 
   this.all = []
 
+  var currentBot = "";
+
+  currentBot = this.allBots[Math.floor(Math.random() * this.allBots.length)];
+
   this.sendMessage = function(){
     if(this.newMessage) {
-      console.log(this.newMessage)
-      socket.emit("message", this.newMessage);
-      $http({
-        method: "GET",
-        url: "http://api.brainshop.ai/get?bid=297&key=h48yqtsJpvTaMp36&uid=" + this.currentUser._id + "c&msg=" + this.newMessage,
-        dataType: "jsonp",
-      }).then(function(response){
-        console.log(response.data.cnt);
-        socket.emit("message", response.data.cnt);
-      });
+      currentBot = this.allBots[Math.floor(Math.random() * this.allBots.length)];
+      socket.emit("message", { content: this.newMessage, name: this.currentUser.username});
+      ChatBotService
+        .getResponse(this.newMessage, currentBot.bid, this.currentUser._id, currentBot.apikey)
+        .then(function(response){
+          delay = Math.random() * 2000
+          setTimeout(function() {
+            socket.emit("message", {
+              content: response.data,
+              name: currentBot.name
+            });
+          }, delay);
+        }); 
     }
 
     this.newMessage = null;
@@ -130,56 +125,6 @@ function ChatController($auth, $state, $window, $rootScope, $http) {
       self.all.push(message);
     })
   });
-
-  // game choice
-
-  // this.choice = function(guess) {
-  //   if(guess === "HOOMAN") {
-  //     if() {
-
-  //     } else {
-        
-  //     }
-  //   } else {
-
-  //   }
-  // }
-
-  // Speech recognition
-
-  this.rec = new webkitSpeechRecognition();
-  this.final = "";
-  this.message = "";
-  this.rec.continuous = false;
-  this.rec.lang = "en-US";
-  this.rec.onerror = function(event) {
-    console.log("error!");
-  };
-
-  this.start = function() {
-    self.rec.start();
-  };
-  
-  this.rec.onresult = function(event) {
-    for(var i = event.resultIndex; i < event.results.length; i++) {
-      if(event.results[i].isFinal) {
-        self.final = self.final.concat(event.results[i][0].transcript);
-        console.log(event.results[i][0].transcript);
-        self.message = event.results[i][0].transcript
-        socket.emit("message", self.message);
-        $http({
-          method: "GET",
-          url: "http://api.brainshop.ai/get?bid=297&key=h48yqtsJpvTaMp36&uid=" + self.currentUser._id + "c&msg=" + self.message,
-          dataType: "jsonp",
-        }).then(function(response){
-          console.log(response.data.cnt);
-          socket.emit("message", response.data.cnt);
-        });
-      }
-      this.message = null
-      this.final = null
-    }
-  };
 }
 angular
   .module("ChatBotApp")
@@ -194,7 +139,7 @@ function LoginController($auth, $state, $rootScope) {
     $auth.authenticate(provider)
       .then(function() {
         $rootScope.$broadcast("loggedIn");
-        $state.go("home");
+        $state.go("chat");
       });
   }
 
@@ -228,6 +173,8 @@ function MainController($auth, $state, $rootScope, $http) {
   $rootScope.$on("loggedIn", function() {
     self.currentUser = $auth.getPayload();
   });
+  
+  $rootScope.$state = $state;
 }
 angular
   .module("ChatBotApp")
@@ -344,7 +291,6 @@ function ChatbotsShowController(Chatbot, $state) {
     this.selected.$update();
   }
 }
-
 angular
   .module("ChatBotApp")
   .controller("UsersIndexController", UsersIndexController);
@@ -425,13 +371,11 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
       socket.emit("roomMessage", { content: this.newMessage, id: this.currentUser._id});
 
       var rand = Math.random()
-      console.log(rand)
       if(rand <= 0.65) {
         ChatBotService
           .getResponse(this.newMessage, currentBot.bid, this.currentUser._id, currentBot.apikey)
           .then(function(response){
             delay = Math.random() * 2000
-            console.log(delay)
             setTimeout(function() {
               socket.emit("roomMessage", {
                 content: response.data,
@@ -447,7 +391,6 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
   socket.on("roomMessage", function(message) {
     $rootScope.$evalAsync(function() {
       self.allMessages.push(message);
-      console.log(self.allMessages);
     })
   });
 
@@ -478,16 +421,12 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
         currentBot = data.currentBot;
         self.allPlayers = data.allPlayers;
         counter();
-        this.userToBeUpdated = User.get({ id: this.currentUser._id }, function(user) {
-          user.rightGuess = Number(user.rightGuess) + 1
-          console.log(user);
-          console.log(user.rightGuess);
+        self.userToBeUpdated = User.get({ id: self.currentUser._id }, function(user) {
+          user.gamesPlayed = Number(user.gamesPlayed) + 1
           user.$update();
         });
-        this.botToBeUpdated = Chatbot.get({ id: currentBot._id }, function(bot) {
-          bot.numberDeceived = Number(bot.numberDeceived) + 1
-          console.log(bot);
-          console.log(bot.numberDeceived);
+        self.botToBeUpdated = Chatbot.get({ id: currentBot._id }, function(bot) {
+          bot.gamesPlayed = Number(bot.gamesPlayed) + 1
           bot.$update();
         });
       }
@@ -502,30 +441,19 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
 
   var startButton = document.getElementsByClassName("start-button");
 
-  // if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
-  //   addButton[0].disabled = "disabled";
-  //   leaveButton[0].disabled = "";
-  //   startButton[0].disabled = "";
-  // } else if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
-
-  // }
-
   this.addPlayer = function() {
-    console.log(this.allUsers)
-    console.log(this.currentUser._id)
     if(this.allUsers.indexOf(this.currentUser._id) === -1 && this.selectedRoom.users.length < this.selectedRoom.capacity) {
       this.allUsers.push(this.currentUser._id);
       this.selectedRoom.users = this.allUsers;
       this.selectedRoom.$update();
       addButton[0].disabled = "disabled";
       leaveButton[0].disabled = "";
-      console.log("Newest ", this.selectedRoom)
       socket.emit("playerChanges", this.selectedRoom.users);
       socket.emit("capacityUpdate", { users: this.selectedRoom.users, room: this.selectedRoom});
     } else if(this.allUsers.indexOf(this.currentUser._id) === -1) {
-      console.log("The game is full")
+      document.getElementById("content").innerHTML = "The game is full!";
     } else {
-      console.log("You have already joined the game")
+      document.getElementById("content").innerHTML = "You have already joined the game";
     }
   }
 
@@ -563,11 +491,11 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
     counter = setInterval(timer, 1000);
   }
 
-  this.count = 5
-  var count = 5;
+  this.count = 120
+  var count = 120;
   function timer() {
     count = count-1;
-    this.count = Math.floor((100/5)*count)
+    this.count = Math.floor((100/120)*count)
     var timer = document.getElementsByClassName("timer");
     timer[0].style.width = this.count + "%";
     if(count <= 0) {
@@ -586,20 +514,19 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
         shuffle(this.allPlayers);
         this.gameState = 0;
         socket.emit("gameStart", { gameState: this.gameState, currentBot: currentBot, allPlayers: this.allPlayers });
-        console.log("The capacity thing is working");
       } else if(this.gameState === 0) {
-        console.log("The game is currently in progress.");
+        document.getElementById("content").innerHTML = "The game is currently in progress.";
       } else{
-        console.log("The game is over!")
+        document.getElementById("content").innerHTML = "The game is over!";
       }
     } else {
-      console.log("The game is not yet ready. Please wait for the room to be full.");
+      document.getElementById("content").innerHTML = "The game is not yet ready. Please wait for the room to be full.";
     }
   }
 
   var gameEnd = function() {
     self.gameState = 1
-    console.log("The timer is up!")
+    document.getElementById("content").innerHTML = "The timer is up!";
   }
 
   var chosen = 0
@@ -607,25 +534,22 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
   this.choice = function(user) {
     if(this.gameState === 1 && chosen === 0) {
       if(user === currentBot._id) {
-        document.getElementById("answer").innerHTML = "You chose...wisely!";
+        chosen = 1
+        document.getElementById("content").innerHTML = "You chose...wisely!";
         this.userToBeUpdated = User.get({ id: this.currentUser._id }, function(user) {
           user.rightGuess = Number(user.rightGuess) + 1
-          console.log(user);
-          console.log(user.rightGuess);
           user.$update();
         });
       } else {
-        document.getElementById("answer").innerHTML = "You chose...poorly!";
-        console.log(currentBot._id)
+        chosen = 1
+        document.getElementById("content").innerHTML = "You chose...poorly!";
         this.botToBeUpdated = Chatbot.get({ id: currentBot._id }, function(bot) {
           bot.numberDeceived = Number(bot.numberDeceived) + 1
-          console.log(bot);
-          console.log(bot.numberDeceived);
           bot.$update();
         });
       }
     } else {
-      console.log("You have already made your choice!")
+      document.getElementById("content").innerHTML = "You have already made your choice!";
     }
   }
 
@@ -649,13 +573,11 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
         socket.emit("roomMessage", { content: self.message, id: self.currentUser._id});
 
         var rand = Math.random()
-        console.log(rand)
         if(rand <= 0.65) {
           ChatBotService
             .getResponse(self.message, currentBot.bid, self.currentUser._id, currentBot.apikey)
-            .then(function(response){
+            .then(function(response) {
               delay = Math.random() * 2000
-              console.log(delay)
               setTimeout(function() {
                 socket.emit("roomMessage", {
                   content: response.data,

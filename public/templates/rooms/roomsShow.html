@@ -1,17 +1,16 @@
-<h1>This is the Chatroom show</h1>
-
 <div>
-  <h3>Name: {{ roomsShow.selectedRoom.name }}</h3>
+  <h3>Room Name: {{ roomsShow.selectedRoom.name }}</h3>
   <h4>Capacity: {{roomsShow.selectedRoom.users.length}}/{{ roomsShow.selectedRoom.capacity }}</h4>
   <button ng-click="roomsShow.addPlayer()" class="btn btn-primary add-button">Join Game</button>
   <button ng-click="roomsShow.removePlayer()" class="btn btn-danger leave-button">Leave Game</button>
   <button ng-click="roomsShow.gameStart()" class="btn btn-success start-button" disabled="disabled">Start Game</button>
 
+  <div id="content"></div>
+
   <div ng-if="roomsShow.gameState === 1">
     <p>Time is up! Please click on the player that you think is the AI.</p>
-    <div id="answer"></div>
     <div>
-      <div class="col-md-2" ng-repeat="user in roomsShow.allPlayers track by $index" ng-if="user !== roomsShow.currentUser._id" ng-click="roomsShow.choice(user)" ng-class="roomsShow.playerColors[roomsShow.allPlayers.indexOf(user)]">
+      <div class="col-md-6" ng-repeat="user in roomsShow.allPlayers track by $index" ng-if="user !== roomsShow.currentUser._id" ng-click="roomsShow.choice(user)" ng-class="roomsShow.playerColors[roomsShow.allPlayers.indexOf(user)]">
         <div class="thumbnail">
           <img src="https://cdn2.iconfinder.com/data/icons/knowledge/512/electronic_brain-512.png">
         </div>
@@ -19,13 +18,14 @@
     </div>
   </div>
 
-  <div ng-if="roomsShow.allUsers.indexOf(roomsShow.currentUser._id) !== -1 && roomsShow.gameState === 0" class="col-md-6 col-md-offset-1">
+  <div ng-if="roomsShow.allUsers.indexOf(roomsShow.currentUser._id) !== -1 && roomsShow.gameState === 0" class="col-md-8 col-md-offset-2 message-voice">
 
-    <form ng-submit="roomsShow.sendMessage()">
+
+    <form ng-submit="roomsShow.sendMessage()" class="col-md-8">
       <input placeholder="Type your message here" ng-model="roomsShow.newMessage" class="form-control">
     </form>
 
-    <button ng-click="roomsShow.start()" class="btn btn-success">Click me to voice chat</button>
+    <button ng-click="roomsShow.start()" class="btn btn-success" class="col-md-4">Voice chat</button>
 
     <div class="progress">
       <div class="progress-bar progress-bar-success timer" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="120" style="width: 100%">
@@ -34,7 +34,7 @@
   </div>
 </div>
 
-<div class="col-md-10 col-md-offset-1">
+<div class="col-md-12 room-chat-window">
   <ul class="message-list">
     <li ng-repeat="message in roomsShow.allMessages track by $index" ng-class="roomsShow.playerColors[roomsShow.allPlayers.indexOf(message.id)]">{{ message.content }}</li>
   </ul>  
