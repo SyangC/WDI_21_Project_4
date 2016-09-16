@@ -148,7 +148,7 @@ function LoginController($auth, $state, $rootScope) {
       url: "/api/login"
     }).then(function(){
       $rootScope.$broadcast("loggedIn");
-      $state.go("home");
+      $state.go("chat");
     })
   }
 }
@@ -191,7 +191,7 @@ function RegisterController($auth, $state, $rootScope) {
     })
     .then(function(){
       $rootScope.$broadcast("loggedIn");
-      $state.go("home");
+      $state.go("chat");
     })
   }
 }
