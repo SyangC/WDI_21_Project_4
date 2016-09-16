@@ -63,12 +63,12 @@ Room.create([{
     apikey: "h48yqtsJpvTaMp36"
   }, {
     name: "Chanse",
-    bid: 307,
-    apikey: "HvAYTrjZMVnZ1CqS"
+    bid: 313,
+    apikey: "jFiMyd9pWveOPzox"
   }, {
     name: "Rosie",
-    bid: 312,
-    apikey: "Bl92J1PDwrPDKPZE"
+    bid: 314,
+    apikey: "PhbcWXSX35vmo4uh"
   }], function(err, chatbots) {
     if(!err) console.log("Chatbots created!");
       
