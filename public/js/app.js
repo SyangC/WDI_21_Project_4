@@ -197,6 +197,21 @@ function RegisterController($auth, $state, $rootScope) {
 }
 angular
   .module("ChatBotApp")
+  .directive("date", date);
+
+function date() {
+  return {
+    restrict: "A",
+    require: "ngModel",
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$formatters.push(function(value) {
+        return new Date(value);
+      });
+    }
+  }
+}
+angular
+  .module("ChatBotApp")
   .factory("Chatbot", Chatbot);
 
 Chatbot.$inject = ["$resource"]
@@ -246,21 +261,6 @@ function ChatBotService($http) {
 }
 angular
   .module("ChatBotApp")
-  .directive("date", date);
-
-function date() {
-  return {
-    restrict: "A",
-    require: "ngModel",
-    link: function(scope, element, attrs, ngModel) {
-      ngModel.$formatters.push(function(value) {
-        return new Date(value);
-      });
-    }
-  }
-}
-angular
-  .module("ChatBotApp")
   .controller("ChatbotsIndexController", ChatbotsIndexController);
 
 ChatbotsIndexController.$inject = ["Chatbot", "$state", "$window", "$rootScope"];
@@ -286,38 +286,6 @@ function ChatbotsShowController(Chatbot, $state) {
   var self = this;
 
   this.selected = Chatbot.get({ id: $state.params.id });
-
-  this.update = function() {
-    this.selected.$update();
-  }
-}
-angular
-  .module("ChatBotApp")
-  .controller("UsersIndexController", UsersIndexController);
-
-UsersIndexController.$inject = ["User", "$state", "$window", "$rootScope"];
-function UsersIndexController(User, $state, $window, $rootScope) {
-
-  this.all = User.query();
-
-  this.header = 'username';
-  this.reverse = true;
-
-  this.sortBy = function(header) {
-    this.reverse = (this.header === header) ? !this.reverse : false;
-    this.header = header;
-  };
-
-}
-angular
-  .module("ChatBotApp")
-  .controller("UsersShowController", UsersShowController);
-
-UsersShowController.$inject = ["User", "$state"];
-function UsersShowController(User, $state) {
-  var self = this;
-
-  this.selected = User.get({ id: $state.params.id });
 
   this.update = function() {
     this.selected.$update();
@@ -590,4 +558,36 @@ function RoomsShowController(Room, User, Chatbot, $state, $window, $auth, $rootS
       self.message = null
     }
   };
+}
+angular
+  .module("ChatBotApp")
+  .controller("UsersIndexController", UsersIndexController);
+
+UsersIndexController.$inject = ["User", "$state", "$window", "$rootScope"];
+function UsersIndexController(User, $state, $window, $rootScope) {
+
+  this.all = User.query();
+
+  this.header = 'username';
+  this.reverse = true;
+
+  this.sortBy = function(header) {
+    this.reverse = (this.header === header) ? !this.reverse : false;
+    this.header = header;
+  };
+
+}
+angular
+  .module("ChatBotApp")
+  .controller("UsersShowController", UsersShowController);
+
+UsersShowController.$inject = ["User", "$state"];
+function UsersShowController(User, $state) {
+  var self = this;
+
+  this.selected = User.get({ id: $state.params.id });
+
+  this.update = function() {
+    this.selected.$update();
+  }
 }
